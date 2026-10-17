@@ -1,27 +1,12 @@
+import { FaGithub, FaLinkedinIn, FaEnvelope } from "react-icons/fa";
+
+// TODO: replace the LinkedIn URL with your own profile before deploying.
 export default [
-  {
-    name: "GitHub",
-    url: "https://github.com/yourusername",
-    icon: "/src/assets/images/social/github.svg"
-  },
+  { name: "GitHub", url: "https://github.com/AbhayCodes-dev", Icon: FaGithub },
   {
     name: "LinkedIn",
-    url: "https://linkedin.com/in/yourusername",
-    icon: "/src/assets/images/social/linkedin.svg"
+    url: "https://www.linkedin.com/in/abhay-yadav-169938355/",
+    Icon: FaLinkedinIn,
   },
-  {
-    name: "Twitter",
-    url: "https://twitter.com/yourusername",
-    icon: "/src/assets/images/social/twitter.svg"
-  },
-  {
-    name: "Instagram",
-    url: "https://instagram.com/yourusername",
-    icon: "/src/assets/images/social/instagram.svg"
-  },
-  {
-    name: "Facebook",
-    url: "https://facebook.com/yourusername",
-    icon: "/src/assets/images/social/facebook.svg"
-  }
-]
+  { name: "Email", url: "mailto:yabhay.in@gmail.com", Icon: FaEnvelope },
+];

@@ -1,24 +1,91 @@
 @import "tailwindcss";
 
-/* Custom base styles */
+/* `dark:` follows the .dark class on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------- Colour palette: flat, solid colours only ---------- */
+:root {
+  --bg: #f4f0e8;      /* warm paper */
+  --panel: #ebe5d9;   /* slightly darker band for alternate sections */
+  --ink: #1f1d1a;     /* main text */
+  --muted: #645f57;   /* secondary text */
+  --line: #d8d0c1;    /* hairline borders */
+  --accent: #b4441f;  /* burnt orange */
+  --accent-ink: #ffffff;
+}
+
+.dark {
+  --bg: #151412;
+  --panel: #1e1c19;
+  --ink: #ece7de;
+  --muted: #a29c90;
+  --line: #2f2c27;
+  --accent: #e8845a;
+  --accent-ink: #151412;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+}
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem; /* keeps section headings clear of the sticky header */
+  }
+
   body {
-    @apply text-slate-800 dark:text-slate-200;
-    font-family: 'Inter', sans-serif;
+    @apply bg-bg text-ink font-sans antialiased;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold;
+
+  h1, h2, h3, h4 {
+    @apply font-serif font-medium tracking-tight;
   }
-  
-  a {
-    @apply transition-colors duration-300;
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  img {
+    max-width: 100%;
   }
 }
 
-/* Custom animations */
-.wave-animation {
-  animation: wave 2s infinite;
-  transform-origin: 70% 70%;
-  display: inline-block;
+/* ---------- Small, quiet motion ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.rise {
+  animation: rise 0.7s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .rise { animation: none; }
 }

@@ -1,142 +1,105 @@
-import { useState } from 'react';
-import { Link } from 'react-scroll';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react'
+import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa'
 
-const Navbar = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+const links = [
+  { name: 'About', id: 'about' },
+  { name: 'Skills', id: 'skills' },
+  { name: 'Projects', id: 'projects' },
+  { name: 'Resume', id: 'resume' },
+  { name: 'Contact', id: 'contact' },
+]
 
-  const navLinks = [
-    { name: 'About', to: 'about' },
-    { name: 'Skills', to: 'skills' },
-    { name: 'Projects', to: 'projects' },
-    { name: 'Contact', to: 'contact' }
-  ];
+const Navbar = ({ darkMode, toggleTheme }) => {
+  const [open, setOpen] = useState(false)
+  const [active, setActive] = useState('')
+
+  // Highlight the link of the section currently under the header
+  useEffect(() => {
+    let frame = 0
+    const update = () => {
+      frame = 0
+      let current = ''
+      for (const { id } of links) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= 120) current = id
+      }
+      setActive(current)
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [])
+
+  const linkClass = (id) =>
+    `transition-colors hover:text-accent ${active === id ? 'text-accent' : 'text-ink'}`
 
   return (
-    <nav className="fixed w-full z-50 bg-transparent">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="relative">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-gray-900/60 backdrop-blur-xl rounded-full border border-gray-800/50 shadow-xl mt-4 p-4"
+    <header className="sticky top-0 z-50 border-b border-line bg-bg">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-accent-ink"
+      >
+        Skip to content
+      </a>
+      <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-5 sm:px-8" aria-label="Main">
+        <a href="#home" className="font-serif text-2xl font-medium tracking-tight">
+          Abhay<span className="text-accent">.</span>
+        </a>
+
+        <div className="flex items-center gap-1 sm:gap-2">
+          <ul className="hidden items-center gap-8 text-[15px] font-medium md:flex">
+            {links.map((l) => (
+              <li key={l.id}>
+                <a href={`#${l.id}`} className={linkClass(l.id)} aria-current={active === l.id ? 'true' : undefined}>
+                  {l.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+            className="ml-2 flex h-10 w-10 items-center justify-center rounded-md text-ink transition-colors hover:text-accent md:ml-6"
           >
-            <div className="flex justify-between items-center">
-              <motion.span 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-emerald-500 tracking-wider"
-              >
-                Abhay
-              </motion.span>
+            {darkMode ? <FaSun aria-hidden="true" /> : <FaMoon aria-hidden="true" />}
+          </button>
 
-              {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center gap-8">
-                {navLinks.map((link, index) => (
-                  <motion.div
-                    key={link.to}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.5, 
-                      delay: 0.2 + index * 0.1 
-                    }}
-                  >
-                    <Link
-                      to={link.to}
-                      smooth={true}
-                      duration={500}
-                      offset={-70}
-                      className="relative cursor-pointer font-medium text-gray-300 
-                        hover:text-transparent hover:bg-clip-text 
-                        hover:bg-gradient-to-r hover:from-indigo-500 hover:to-emerald-500 
-                        transition-all duration-300 
-                        group"
-                    >
-                      {link.name}
-                      <span 
-                        className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-emerald-500 
-                        group-hover:w-full transition-all duration-300"
-                      />
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Mobile menu button */}
-              <motion.button
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="md:hidden p-2 rounded-full text-gray-300 hover:bg-gray-800/50 transition-colors"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                ) : (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                )}
-              </motion.button>
-            </div>
-          </motion.div>
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            className="flex h-10 w-10 items-center justify-center rounded-md text-ink transition-colors hover:text-accent md:hidden"
+          >
+            {open ? <FaTimes aria-hidden="true" /> : <FaBars aria-hidden="true" />}
+          </button>
         </div>
+      </nav>
 
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden absolute w-full left-0 right-0 z-50 mt-4"
-            >
-              <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 shadow-xl overflow-hidden">
-                <div className="px-6 py-6 space-y-4">
-                  {navLinks.map((link, index) => (
-                    <motion.div
-                      key={link.to}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ 
-                        duration: 0.3, 
-                        delay: index * 0.1 
-                      }}
-                    >
-                      <Link
-                        to={link.to}
-                        smooth={true}
-                        duration={500}
-                        offset={-70}
-                        className="block cursor-pointer font-medium text-gray-300 
-                          hover:text-transparent hover:bg-clip-text 
-                          hover:bg-gradient-to-r hover:from-indigo-500 hover:to-emerald-500 
-                          transition-all duration-300 
-                          group relative"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {link.name}
-                        <span 
-                          className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-emerald-500 
-                          group-hover:w-full transition-all duration-300"
-                        />
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </nav>
-  );
-};
+      {open && (
+        <div id="mobile-menu" className="border-t border-line bg-bg md:hidden">
+          <ul className="mx-auto max-w-5xl px-5 py-2 sm:px-8">
+            {links.map((l) => (
+              <li key={l.id} className="border-b border-line last:border-b-0">
+                <a href={`#${l.id}`} onClick={() => setOpen(false)} className={`block py-4 text-lg font-medium ${linkClass(l.id)}`}>
+                  {l.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </header>
+  )
+}
 
-export default Navbar;
+export default Navbar

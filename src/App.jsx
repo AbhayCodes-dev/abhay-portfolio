@@ -1,74 +1,75 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
-import About from './components/About'
-import Skills from './components/Skills'
-import Projects from './components/Projects'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
+
+// Below-the-fold sections are code-split with React.lazy: each one is its own JS chunk,
+// fetched after the hero has painted instead of being part of the first bundle.
+const About = lazy(() => import('./components/About'))
+const Skills = lazy(() => import('./components/Skills'))
+const Projects = lazy(() => import('./components/Projects'))
+const Resume = lazy(() => import('./components/Resume'))
+const Contact = lazy(() => import('./components/Contact'))
+const Footer = lazy(() => import('./components/Footer'))
+
+const SectionFallback = () => (
+  <div className="flex min-h-[50vh] items-center justify-center" role="status" aria-label="Loading section">
+    <div className="h-7 w-7 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+  </div>
+)
+
+const applyTheme = (dark) => document.documentElement.classList.toggle('dark', dark)
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
+  // The initial theme is set by a tiny inline script in index.html (no flash on load)
+  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'))
 
-  useEffect(() => {
-    // Check for saved dark mode preference
-    const savedDarkMode = localStorage.getItem('darkMode')
-    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-    // Set dark mode based on saved preference or system preference
-    if (savedDarkMode !== null) {
-      setDarkMode(JSON.parse(savedDarkMode))
-    } else if (prefersDarkMode) {
-      setDarkMode(true)
+  const toggleTheme = () => {
+    const next = !darkMode
+    setDarkMode(next)
+    applyTheme(next)
+    try {
+      localStorage.setItem('theme', next ? 'dark' : 'light')
+    } catch {
+      /* storage unavailable (private mode): theme just won't persist */
     }
+  }
 
-    // Mark component as loaded
-    setIsLoaded(true)
-
-    // Listen for system dark mode changes
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleDarkModeChange = (e) => {
-      // Only change if no saved preference exists
-      if (localStorage.getItem('darkMode') === null) {
+  // Follow the system theme until the visitor picks one themselves
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const onChange = (e) => {
+      let saved = null
+      try {
+        saved = localStorage.getItem('theme')
+      } catch {
+        /* ignore */
+      }
+      if (saved === null) {
         setDarkMode(e.matches)
+        applyTheme(e.matches)
       }
     }
-
-    darkModeMediaQuery.addEventListener('change', handleDarkModeChange)
-
-    // Cleanup listener
-    return () => {
-      darkModeMediaQuery.removeEventListener('change', handleDarkModeChange)
-    }
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
   }, [])
 
-  // Update localStorage when dark mode changes
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('darkMode', JSON.stringify(darkMode))
-      
-      // Update HTML class for proper styling
-      if (darkMode) {
-        document.documentElement.classList.add('dark')
-      } else {
-        document.documentElement.classList.remove('dark')
-      }
-    }
-  }, [darkMode, isLoaded])
-
   return (
-    <div className={darkMode ? 'dark' : ''}>
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-colors duration-300">
-        <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+    <>
+      <Navbar darkMode={darkMode} toggleTheme={toggleTheme} />
+      <main id="main">
         <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Contact />
+        <Suspense fallback={<SectionFallback />}>
+          <About />
+          <Skills />
+          <Projects />
+          <Resume />
+          <Contact />
+        </Suspense>
+      </main>
+      <Suspense fallback={null}>
         <Footer />
-      </div>
-    </div>
+      </Suspense>
+    </>
   )
 }
 

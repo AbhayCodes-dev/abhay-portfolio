@@ -4,7 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <title>Abhay | Full-Stack Developer Portfolio</title>
+    <meta name="description" content="Portfolio of Abhay, a full-stack developer building React and Node.js applications. Explore projects, skills, resume and contact details." />
+    <meta property="og:title" content="Abhay | Full-Stack Developer Portfolio" />
+    <meta property="og:description" content="Projects, skills and resume of Abhay, a full-stack developer." />
+    <meta property="og:type" content="website" />
+    <!-- Apply the saved/system theme before first paint so dark-mode visitors don't see a white flash -->
+    <script>
+      try {
+        var t = localStorage.getItem('theme');
+        var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (dark) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
