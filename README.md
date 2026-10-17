@@ -4,7 +4,7 @@
 
 A fast, responsive personal portfolio built with React, Vite and Tailwind CSS.
 
-**[Live site](#)** &nbsp;·&nbsp; **[Source code](https://github.com/AbhayCodes-dev/abhay-portfolio)**
+**[Live site](https://abhay-portfolio-kappa-nine.vercel.app)** &nbsp;·&nbsp; **[Source code](https://github.com/AbhayCodes-dev/abhay-portfolio)**
 
 <br />
 
