@@ -219,14 +219,14 @@ Run against the production build in headless Chromium (Playwright):
 
 Results from testing the deployed site:
 
-| Browser or device | Works? | Notes |
-| ----------------- | :----: | ----- |
-| Chrome (desktop)  |        |       |
-| Firefox           |        |       |
-| Safari            |        |       |
-| Edge              |        |       |
-| Android phone     |        |       |
-| iPhone            |        |       |
+| Browser or device | Works? | Notes      |
+| ----------------- | :----: | ---------- |
+| Chrome (desktop)  |   ✅   |            |
+| Edge              |   ✅   |            |
+| Firefox           |   ✅   |            |
+| Safari            |        | Not tested |
+| Android phone     |   ✅   |            |
+| iPhone            |        | Not tested |
 
 Also checked: the contact form sends a real email, the resume downloads, and every project link opens.
 
